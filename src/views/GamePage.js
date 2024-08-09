@@ -1,6 +1,6 @@
-import { useEffect, useState, createContext } from "react";
+import { useEffect, useState, createContext, useCallback } from "react";
 import SiteNav from '../templates/SiteNav';
-import {collection, getDoc,updateDoc, doc} from "firebase/firestore";
+import {collection, getDoc,setDoc, doc} from "firebase/firestore";
 import {db,auth} from "../firebase";
 import Board, {defaultBoard} from "../templates/BoardLayout"
 import NumBoard from "../templates/NumBoard";
@@ -21,40 +21,67 @@ export default function GamePage() {
    const [gameEnd, setGameEnd] = useState({is_win: false, gameEnd: false});
    const [correctc,setCorrectc]= useState(0);
    const [user,loading]= useAuthState(auth);
-   const [iuserstats,setiUserStats]= useState({wins: 0, total: 0})
-  //  const [useremail,setUserEmail]= useState(user.email)
+   const [outuserstats,setOutUserStats]= useState({wins: 0, total: 0})
 
    const navigate = useNavigate();
 
+    // async function getUser(useremail) {
+    //     // console.log(useremail)
+    //     const query= await getDoc(doc(db,"userstats", useremail));
+    //     const stats = await query.data()
+    //     // await console.log(stats)
+    //     // await console.log(stats.wins)
+    //     // await console.log(stats.total)
+    //     await setOutUserStats({wins: stats.wins, total: stats.total});
+    //     // console.log(outuserstats)
+    //     return stats;
+    // }
+
+    // const handlegetUser = useCallback(()=>{
+    //   if (loading) return;
+    //   if (!user) return navigate("/login");
+    //   getUser(user.email)
+    // }, [getUser, user, loading,navigate])
 
 
   useEffect(() => {
+    async function getUser(useremail) {
+      // console.log(useremail)
+      const query= await getDoc(doc(db,"userstats", useremail));
+      const stats = await query.data()
+      await console.log(stats)
+      // await console.log(stats.wins)
+      // await console.log(stats.total)
+      await setOutUserStats({wins: stats.wins, total: stats.total});
+      // console.log(outuserstats)
+      return stats;
+  }
     if (loading) return;
     if (!user) return navigate("/login");
-    // console.log(user.email)
-    // getUser()
+    getUser(user.email)
     setCorrectNum(outCorrectNum);
-    console.log(correctNum);
-
+    // console.log(correctNum);
   }, [correctNum,user,loading, navigate]);
 
-  // async function getUser() {
-  //   const query= await getDoc(doc(db,"userstats", useremail));
-  //   const stats = query.data()
-  //   setiUserStats(stats)
-  //   }
-
-  async function updateStats(istats) {      
-    await updateDoc(doc(db, "userstats", user), {wins: istats.wins, total:istats.total  });
-    // navigate("/");
+  async function updateStats() {      
+    const query= await getDoc(doc(db, "userstats", user));
+    await setDoc(query.ref,{
+      wins: outuserstats.wins,
+      total: outuserstats.total
+    })
+    navigate("/stats");
   }
-
-
-  // const showToast=()=>{
-  //   toast.success("You won!", {
-  //       position:toast.POSITION.TOP_RIGHT
-  //     })
-  //   }
+  
+  async function winGame() {
+    await setGameEnd({is_win:true, gameEnd:true});
+    toast.success("You won !", {
+      position: "top-center"
+    });
+    console.log(gameEnd);
+    await setOutUserStats({ wins: outuserstats.wins +1, total: outuserstats.total +1});
+    await console.log(outuserstats)
+    await updateStats();
+  }
 
   const onEnter=() => {
     if (currAttempt.char !== 5) return;
@@ -67,24 +94,15 @@ export default function GamePage() {
     console.log("currNum",{currNum})
     console.log("correctNum",{correctNum})
     if (currNum== correctNum) {
-        setGameEnd({is_win:true, gameEnd:true});
-        toast.success("You won !", {
-          position: "top-center"
-        });
-        console.log(gameEnd);
-        setiUserStats({ wins: iuserstats.wins +1, total: iuserstats.total +1});
-        // updateStats(iuserstats);
-        
-      
+        winGame()
         return ;
-        // to update db here
+        
     };
     if (currAttempt.attempt === 7) {
         setGameEnd({is_win:false, gameEnd:true})
-        setiUserStats({ wins: iuserstats.wins, total: iuserstats.total +1})
-        // updateStats(iuserstats)
+        setOutUserStats({ wins: outuserstats.wins, total: outuserstats.total +1})
+        updateStats()
         return;
-        // to update db here
     }
     setCurrAttempt({attempt: currAttempt.attempt +1, char:0})
   }
