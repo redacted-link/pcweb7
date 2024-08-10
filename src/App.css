@@ -106,3 +106,13 @@
 #error {
   background-color: grey ;
 }
+
+.instruction {
+  position: absolute;
+  top: 80px;
+  right: 40px;
+  width: 150px;
+  height: fit-content;
+  color: white;
+  border: 4px solid white;
+}

@@ -8,8 +8,10 @@ function SiteNav() {
             <Container>
                 <Navbar.Brand href="/">Nummaster</Navbar.Brand>
                 <Nav>
-                <Nav.Link href="/stats">Stats</Nav.Link>
+                {/* <Nav.Link href="/stats">Stats</Nav.Link> */}
                 <Nav.Link href="/login">Login</Nav.Link>
+                <Nav.Link href="/feedback">Feedback</Nav.Link>
+                <Nav.Link href="/edit">Edit Profile</Nav.Link>
                 <Nav.Link onClick= {(e)=> signOut(auth)}>🚪</Nav.Link>
                 </Nav>
             </Container>

@@ -1,6 +1,6 @@
-import { useEffect, useState, createContext, useCallback } from "react";
+import { useEffect, useState, createContext} from "react";
 import SiteNav from '../templates/SiteNav';
-import {collection, getDoc,setDoc, doc} from "firebase/firestore";
+import { getDoc,setDoc, doc} from "firebase/firestore";
 import {db,auth} from "../firebase";
 import Board, {defaultBoard} from "../templates/BoardLayout"
 import NumBoard from "../templates/NumBoard";
@@ -78,9 +78,9 @@ export default function GamePage() {
       position: "top-center"
     });
     console.log(gameEnd);
-    await setOutUserStats({ wins: outuserstats.wins +1, total: outuserstats.total +1});
-    await console.log(outuserstats)
-    await updateStats();
+    // await setOutUserStats({ wins: outuserstats.wins +1, total: outuserstats.total +1});
+    // await console.log(outuserstats)
+    // await updateStats();
   }
 
   const onEnter=() => {
@@ -100,8 +100,11 @@ export default function GamePage() {
     };
     if (currAttempt.attempt === 7) {
         setGameEnd({is_win:false, gameEnd:true})
-        setOutUserStats({ wins: outuserstats.wins, total: outuserstats.total +1})
-        updateStats()
+        toast.error(`You lost, the number was ${correctNum}   :( refresh to retry`, {
+          position: "top-center"
+        });
+        // setOutUserStats({ wins: outuserstats.wins, total: outuserstats.total +1})
+        // updateStats()
         return;
     }
     setCurrAttempt({attempt: currAttempt.attempt +1, char:0})
@@ -130,6 +133,8 @@ export default function GamePage() {
     <>
       <SiteNav />
       <ToastContainer />
+      <div className="App instruction">How to play: Type a 5-digit number that does not start with 0 and find the correct number. Green indicates numbers correctly placed; Yellow indicates wrongly placed numbers; Grey indicates that digit is not in number
+      </div>
       <div className="App">
       <AppContext.Provider value={{board,setBoard,currAttempt,setCurrAttempt,correctNum,onEnter,onDelete, gameEnd, onSelectNum, correctc, setCorrectc}}>
         <div>

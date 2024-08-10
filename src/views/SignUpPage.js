@@ -13,6 +13,7 @@ export default function SignUpPage() {
 
   async function addUser(username) {
     await setDoc(doc(db, "userstats", username), {wins:0, total: 0});
+    await setDoc(doc(db, "userprof", username), {image: ""});
   }
 
   return (

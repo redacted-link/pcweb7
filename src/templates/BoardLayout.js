@@ -21,7 +21,7 @@ console.log(outCorrectNum)
 
 
 function Board() {
-    const {correctc} = useContext(AppContext);
+    // const {correctc} = useContext(AppContext);
     return (
         <div className="board">
             <div className="row">
@@ -30,7 +30,7 @@ function Board() {
                 <Number numberPos={2} attemptNum={0}/>
                 <Number numberPos={3} attemptNum={0}/>
                 <Number numberPos={4} attemptNum={0}/>
-                <div>{correctc}</div>
+                {/* <div>{correctc}</div> */}
                 {/* <div>{almostc}</div> */}
             </div>
             <div className="row">
